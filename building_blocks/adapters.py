@@ -5,6 +5,7 @@ from typing import Dict
 from building_blocks.linear import Linear
 from building_blocks.embedding import Embedding
 from building_blocks.rms_norm import RMSNorm
+from building_blocks.swiglu import SwiGLU
 
 
 def run_linear(
@@ -38,3 +39,9 @@ def run_rmsnorm(
     normaliser = RMSNorm(in_features, eps)
     normaliser.load_state_dict(weights)
     return normaliser(input)
+
+
+def run_swiglu(in_features: int, weights: Dict[str, torch.Tensor], input: torch.Tensor):
+    model = SwiGLU(in_features)
+    model.load_state_dict(weights)
+    return model(input)

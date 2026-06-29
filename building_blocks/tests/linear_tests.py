@@ -9,8 +9,9 @@ def test_linear_forward_shape():
     """Test 1: Test that forward pass produces correct output shape for a 1D input."""
     in_features = 10
     out_features = 5
-    # Passing a raw tensor to satisfy the wrapper's {"weight": weights} logic
-    weights = torch.randn(in_features, out_features)
+
+    # Updated to PyTorch standard shape: [out_features, in_features]
+    weights = torch.randn(out_features, in_features)
     weights = {"weight": weights}
     x = torch.randn(in_features)
     output = run_linear(in_features, out_features, weights, x)
@@ -23,7 +24,9 @@ def test_linear_forward_batched():
     batch_size = 32
     in_features = 10
     out_features = 5
-    weights = torch.randn(in_features, out_features)
+
+    # Updated to PyTorch standard shape: [out_features, in_features]
+    weights = torch.randn(out_features, in_features)
     weights = {"weight": weights}
     x = torch.randn(batch_size, in_features)
     output = run_linear(in_features, out_features, weights, x)
@@ -35,7 +38,9 @@ def test_linear_multi_dim_input():
     """Test 3: Test forward pass safely broadcasts over a 3D input."""
     in_features = 10
     out_features = 5
-    weights = torch.randn(in_features, out_features)
+
+    # Updated to PyTorch standard shape: [out_features, in_features]
+    weights = torch.randn(out_features, in_features)
     weights = {"weight": weights}
     # 3D input: (batch_size, seq_len, in_features)
     x = torch.randn(2, 8, in_features)
@@ -49,15 +54,16 @@ def test_linear_mathematical_correctness():
     in_features = 3
     out_features = 2
 
-    # Custom weights: 3 rows (in), 2 cols (out)
-    weights = torch.tensor([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]])
+    # Transposed custom weights to match [out_features, in_features]
+    # 2 rows (out), 3 cols (in)
+    weights = torch.tensor([[1.0, 3.0, 5.0], [2.0, 4.0, 6.0]])
     weights = {"weight": weights}
     # Input vector of ones
     x = torch.tensor([1.0, 1.0, 1.0])
 
     output = run_linear(in_features, out_features, weights, x)
 
-    # Dot product calculation:
+    # Dot product calculation based on the transposed formula (y = xW^T):
     # out_0 = (1*1) + (1*3) + (1*5) = 9.0
     # out_1 = (1*2) + (1*4) + (1*6) = 12.0
     expected = torch.tensor([9.0, 12.0])
@@ -69,7 +75,9 @@ def test_linear_gradients_flow():
     """Test 5: Test that gradients flow properly through the wrapper output to the input."""
     in_features = 10
     out_features = 5
-    weights = torch.randn(in_features, out_features)
+
+    # Updated to PyTorch standard shape: [out_features, in_features]
+    weights = torch.randn(out_features, in_features)
     weights = {"weight": weights}
 
     # We need to track gradients on the input tensor
