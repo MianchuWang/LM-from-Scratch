@@ -2,8 +2,9 @@ import torch
 
 from typing import Dict
 
-from linear import Linear
-from embedding import Embedding
+from building_blocks.linear import Linear
+from building_blocks.embedding import Embedding
+from building_blocks.rms_norm import RMSNorm
 
 
 def run_linear(
@@ -13,7 +14,7 @@ def run_linear(
     input: torch.Tensor,
 ):
     model = Linear(in_features=in_features, out_features=out_features)
-    model.load_state_dict({"weights": weights})
+    model.load_state_dict(weights)
     return model(input)
 
 
@@ -24,5 +25,16 @@ def run_embedding(
     token_ids: torch.Tensor,
 ):
     model = Embedding(num_embeddings=num_embeddings, embedding_dim=embedding_dim)
-    model.load_state_dict({"weights": weights})
+    model.load_state_dict(weights)
     return model(token_ids)
+
+
+def run_rmsnorm(
+    in_features: int,
+    weights: Dict[str, torch.Tensor],
+    input: torch.Tensor,
+    eps: float = 1e-5,
+):
+    normaliser = RMSNorm(in_features, eps)
+    normaliser.load_state_dict(weights)
+    return normaliser(input)
