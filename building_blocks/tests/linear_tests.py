@@ -9,8 +9,8 @@ def test_linear_initialization():
     out_features = 5
     linear = Linear(in_features, out_features)
 
-    assert linear.weights.shape == (in_features, out_features)
-    assert isinstance(linear.weights, torch.nn.Parameter)
+    assert linear.weight.shape == (in_features, out_features)
+    assert isinstance(linear.weight, torch.nn.Parameter)
 
 
 def test_linear_forward_shape():
@@ -63,7 +63,7 @@ def test_linear_gradients():
     loss.backward()
 
     # Check that weights have gradients
-    assert linear.weights.grad is not None
-    assert linear.weights.grad.shape == linear.weights.shape
+    assert linear.weight.grad is not None
+    assert linear.weight.grad.shape == linear.weight.shape
     # Check that input has gradients
     assert x.grad is not None

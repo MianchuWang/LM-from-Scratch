@@ -14,15 +14,16 @@ class Linear(nn.Module):
         dtype: torch.dtype | None = None,
     ):
         super().__init__()
+        self.in_features = in_features
+        self.out_features = out_features
+        self.weight = nn.Parameter(
+            torch.empty(in_features, out_features, device=device, dtype=dtype)
+        )
+        self.reset_parameters()
 
-        self.weights = torch.empty(
-            in_features, out_features, device=device, dtype=dtype
-        )
-        std = math.sqrt(2 / (in_features + out_features))
-        self.weights = torch.nn.init.trunc_normal_(
-            self.weights, mean=0.0, std=std, a=-3 * std, b=3 * std
-        )
-        self.weights = nn.Parameter(self.weights)
+    def reset_parameters(self) -> None:
+        std = math.sqrt(2 / (self.in_features + self.out_features))
+        nn.init.trunc_normal_(self.weight, mean=0.0, std=std, a=-3 * std, b=3 * std)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return einops.einsum(x, self.weights, "... i, i j -> ... j")
+        return einops.einsum(x, self.weight, "... i, i j -> ... j")
